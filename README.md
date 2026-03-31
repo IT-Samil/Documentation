@@ -1,6 +1,8 @@
-# 📸 Galeri Dokumentasi SJI
+# 📸 Galeri Dokumentasi STI
 
 Aplikasi galeri berbasis web sederhana dan responsif untuk mendokumentasikan berbagai kegiatan produksi dan korporat. Aplikasi ini dirancang untuk dijalankan langsung melalui **GitHub Pages** dengan sistem penyimpanan data lokal (`localStorage`) dan sinkronisasi manual via JSON.
+## Klik link Dibawah
+  [Documentasi] (https://it-samil.github.io/Documentation/)
 
 ## ✨ Fitur Utama
 - **Masonry Layout:** Tata letak kartu foto yang adaptif dan estetik.
