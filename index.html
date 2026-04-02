@@ -1,236 +1,380 @@
-<!doctype html>
-<html lang="id" class="h-full">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Galeri Dokumentasi SJI</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { font-family: 'Sora', sans-serif; }
-    .masonry { columns: 3; column-gap: 16px; }
-    @media (max-width: 1024px) { .masonry { columns: 2; } }
-    @media (max-width: 640px) { .masonry { columns: 1; } }
-    .masonry-item { break-inside: avoid; margin-bottom: 16px; position: relative; }
-    .photo-card { position: relative; overflow: hidden; border-radius: 16px; cursor: pointer; transition: all 0.3s ease; background: #1e2030; }
-    .photo-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-    .photo-card .overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 70%); opacity: 0; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
-    .photo-card:hover .overlay { opacity: 1; }
-    .filter-btn.active { background-color: #f59e0b !important; color: #0f1117 !important; transform: scale(1.05); }
-    .modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-    .modal.open { display: flex; }
-    .lightbox { position: fixed; inset: 0; z-index: 150; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; flex-direction: column; }
-    .lightbox.open { display: flex; }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-in { animation: slideIn 0.3s ease-out; }
-    .tag-pill { font-size: 11px; padding: 3px 12px; border-radius: 99px; font-weight: 600; text-transform: uppercase; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galeri PRO</title>
+
+<style>
+/* ===== BODY CYBERPUNK ===== */
+body{
+    font-family: 'Segoe UI', sans-serif;
+    margin:0;
+    background: radial-gradient(circle at top, #1a0033, #000);
+    color:white;
+    text-align:center;
+    overflow-x:hidden;
+}
+
+/* ===== HEADER ===== */
+header h1{
+    font-size:40px;
+    background: linear-gradient(90deg,#ff00cc,#00ffff);
+    -webkit-background-clip:text;
+    color:transparent;
+    text-shadow:0 0 20px rgba(255,0,200,0.7);
+}
+
+/* ===== GRID 3D ===== */
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+    padding:40px;
+    perspective:1000px;
+}
+
+/* ===== CARD ===== */
+.photo{
+    position:relative;
+    border-radius:15px;
+    overflow:hidden;
+    transform-style:preserve-3d;
+    transition: transform 0.2s ease;
+}
+
+/* NEON BORDER */
+.photo::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:15px;
+    background:linear-gradient(45deg,#ff00cc,#00ffff,#ff00cc);
+    filter:blur(12px);
+    opacity:0;
+    transition:0.3s;
+}
+
+.photo:hover::before{
+    opacity:1;
+}
+
+/* IMAGE */
+.photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:0.4s;
+}
+
+/* HOVER ZOOM */
+.photo:hover img{
+    transform:scale(1.1);
+}
+
+/* ===== GLITCH EFFECT ===== */
+.photo:hover img{
+    animation: glitch 0.2s steps(2,end);
+    filter: contrast(1.2) brightness(1.2);
+}
+
+@keyframes glitch{
+    0%{ transform:translate(0,0); }
+    25%{ transform:translate(-2px,2px); }
+    50%{ transform:translate(2px,-2px); }
+    75%{ transform:translate(-2px,-1px); }
+    100%{ transform:translate(0,0); }
+}
+
+/* ===== MODAL ===== */
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.95);
+    backdrop-filter: blur(10px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    opacity:0;
+    visibility:hidden;
+    transition:0.4s;
+}
+
+.modal.show{
+    opacity:1;
+    visibility:visible;
+}
+
+/* MODAL IMAGE */
+.modal img{
+    max-width:85%;
+    max-height:85%;
+    border-radius:10px;
+    box-shadow:
+        0 0 20px #ff00cc,
+        0 0 40px #00ffff;
+    transform:scale(0.8);
+    transition:0.4s;
+}
+
+.modal.show img{
+    transform:scale(1);
+}
+
+/* NAV */
+.nav{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:50px;
+    color:#00ffff;
+    cursor:pointer;
+    text-shadow:0 0 10px #00ffff;
+}
+
+#prev{ left:20px; }
+#next{ right:20px; }
+
+/* CLOSE */
+#close{
+    position:absolute;
+    top:20px;
+    right:40px;
+    font-size:40px;
+    color:#ff00cc;
+    cursor:pointer;
+}
+
+/* ===== SCANLINE ===== */
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.03),
+        rgba(255,255,255,0.03) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events:none;
+}
+
+/* ===== CANVAS BACKGROUND ===== */
+#particles{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+}
+
+/* ===== GLASS EFFECT ===== */
+.modal{
+    backdrop-filter: blur(20px) saturate(150%);
+}
+
+/* ===== RGB GLITCH ===== */
+.glitch{
+    position:relative;
+}
+
+
+
+.glitch::before{
+    transform:translate(2px,0);
+    filter:brightness(1.5) contrast(1.2);
+    mix-blend-mode:screen;
+    color:red;
+}
+
+.glitch::after{
+    transform:translate(-2px,0);
+    filter:brightness(1.5);
+    mix-blend-mode:screen;
+    color:cyan;
+}
+
+/* ===== NEON CURSOR DOT ===== */
+.cursor{
+    position:fixed;
+    width:10px;
+    height:10px;
+    background:#00ffff;
+    border-radius:50%;
+    pointer-events:none;
+    box-shadow:0 0 10px #00ffff,0 0 20px #00ffff;
+}
+</style>
+
 </head>
-<body class="h-full bg-[#0f1117] text-[#f1f1f4]">
 
-  <div id="app" class="min-h-full w-full overflow-auto pb-20">
-    <header class="text-center pt-16 pb-10 px-6">
-      <p class="text-xs tracking-[0.4em] uppercase mb-3 text-[#f59e0b] font-bold">📸 Produksi & SJI</p>
-      <h1 class="text-4xl md:text-5xl font-bold mb-4">Galeri Dokumentasi</h1>
-      <p class="text-[#7a7d8e] max-w-lg mx-auto">Sistem monitoring momen kegiatan secara mandiri.</p>
-    </header>
+<body>
+<canvas id="particles"></canvas>
+<header>
+<h1>Galeri SAMIL TEXTILE INDONESIA</h1>
+<p>DOKUMENTASI KEGIATAN SAMIL</p>
+</header>
 
-    <div class="max-w-6xl mx-auto px-6 mb-12 flex flex-wrap gap-4 justify-center">
-      <button onclick="openModal()" class="bg-[#f59e0b] text-[#0f1117] px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition">
-        <i data-lucide="plus-circle"></i> Tambah Foto
-      </button>
-      <button id="export-btn" class="bg-[#1e2030] border border-[#3a3d4e] px-4 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-[#2a2d40]">
-        <i data-lucide="download"></i> Backup
-      </button>
-      <button onclick="document.getElementById('import-file').click()" class="bg-[#1e2030] border border-[#3a3d4e] px-4 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-[#2a2d40]">
-        <i data-lucide="upload"></i> Restore
-      </button>
-      <input type="file" id="import-file" class="hidden" accept=".json">
-    </div>
+<section class="gallery" id="gallery"></section>
 
-    <nav class="flex flex-wrap justify-center gap-3 px-6 mb-12" id="filters">
-      <button class="filter-btn active tag-pill bg-[#1e2030] text-[#7a7d8e]" data-filter="all">Semua</button>
-      <button class="filter-btn tag-pill bg-[#1e2030] text-[#7a7d8e]" data-filter="seminar">Seminar</button>
-      <button class="filter-btn tag-pill bg-[#1e2030] text-[#7a7d8e]" data-filter="workshop">Workshop</button>
-      <button class="filter-btn tag-pill bg-[#1e2030] text-[#7a7d8e]" data-filter="sosial">Sosial</button>
-      <button class="filter-btn tag-pill bg-[#1e2030] text-[#7a7d8e]" data-filter="olahraga">Olahraga</button>
-    </nav>
+<!-- MODAL -->
+<div class="modal" id="modal">
+    <span id="close">&times;</span>
+    <span class="nav" id="prev">&#10094;</span>
+    <img id="modal-img">
+    <span class="nav" id="next">&#10095;</span>
+</div>
 
-    <div class="masonry px-6 max-w-7xl mx-auto" id="gallery"></div>
-  </div>
+<script>
+// ================= INIT =================
+const gallery = document.getElementById("gallery")
+const modal = document.getElementById("modal")
+const modalImg = document.getElementById("modal-img")
+const close = document.getElementById("close")
+const next = document.getElementById("next")
+const prev = document.getElementById("prev")
 
-  <div id="inputModal" class="modal px-4">
-    <div class="bg-[#1e2030] w-full max-w-lg rounded-2xl p-8 animate-in shadow-2xl border border-[#3a3d4e]">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Dokumentasi Baru</h2>
-        <button onclick="closeModal()" class="text-[#7a7d8e] hover:text-white"><i data-lucide="x"></i></button>
-      </div>
-      
-      <form id="photoForm" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase text-[#7a7d8e] mb-2">Judul</label>
-          <input type="text" id="in-title" required class="w-full bg-[#0f1117] border border-[#3a3d4e] rounded-lg px-4 py-3 outline-none focus:border-[#f59e0b]">
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold uppercase text-[#7a7d8e] mb-2">Tanggal</label>
-            <input type="text" id="in-date" placeholder="15 Jan 2026" required class="w-full bg-[#0f1117] border border-[#3a3d4e] rounded-lg px-4 py-3 outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase text-[#7a7d8e] mb-2">Kategori</label>
-            <select id="in-cat" class="w-full bg-[#0f1117] border border-[#3a3d4e] rounded-lg px-4 py-3 outline-none">
-              <option value="seminar">Seminar</option>
-              <option value="workshop">Workshop</option>
-              <option value="sosial">Sosial</option>
-              <option value="olahraga">Olahraga</option>
-            </select>
-          </div>
-        </div>
+let currentIndex = 0
 
-        <div>
-          <label class="block text-xs font-bold uppercase text-[#7a7d8e] mb-2">Nama File di Folder images/</label>
-          <input type="text" id="in-filename" placeholder="contoh: foto_kegiatan.jpg" required class="w-full bg-[#0f1117] border border-[#3a3d4e] rounded-lg px-4 py-3 outline-none focus:border-[#f59e0b]">
-        </div>
+// ================= DATA =================
+const imagesData = [
+    "1LB.jpeg",
+	"2LB.jpeg",
+	"3.jpg",
+    "https://github.com/IT-Samil/Documentation/blob/main/1LB.jpeg?raw=true",
+    "5.jpg",
+	"6.jpg"
+]
 
-        <div>
-          <label class="block text-xs font-bold uppercase text-[#7a7d8e] mb-2">Keterangan</label>
-          <textarea id="in-desc" rows="2" required class="w-full bg-[#0f1117] border border-[#3a3d4e] rounded-lg px-4 py-3 outline-none focus:border-[#f59e0b]"></textarea>
-        </div>
+// ================= RENDER =================
+imagesData.forEach((src,index)=>{
 
-        <button type="submit" class="w-full bg-[#f59e0b] text-[#0f1117] py-4 rounded-xl font-bold uppercase tracking-widest hover:opacity-90">Simpan Dokumentasi</button>
-      </form>
-    </div>
-  </div>
+    const card = document.createElement("div")
+    card.className = "photo"
 
-  <div class="lightbox" id="lightbox">
-    <button onclick="closeLightbox()" class="absolute top-5 right-5 p-3 rounded-full bg-white/10 text-white"> <i data-lucide="x"></i> </button>
-    <img id="lb-img-tag" src="" class="max-w-[90%] max-h-[70vh] rounded-xl shadow-2xl object-contain">
-    <div class="text-center mt-6 px-6">
-      <h3 id="lb-title" class="text-2xl font-bold text-white"></h3>
-      <p id="lb-desc" class="text-[#7a7d8e] mt-2 max-w-2xl"></p>
-    </div>
-  </div>
+    const img = document.createElement("img")
+    img.src = src
+    img.loading = "lazy"
 
-  <script>
-    // Inisialisasi Data
-    let photos = JSON.parse(localStorage.getItem('galeri_sji_v1')) || [];
-    let currentFilter = "all";
+    card.appendChild(img)
+    gallery.appendChild(card)
 
-    function saveAndRender() {
-      localStorage.setItem('galeri_sji_v1', JSON.stringify(photos));
-      renderGallery();
+    // CLICK (SINGLE SOURCE)
+    img.onclick = ()=>{
+        currentIndex = index
+        modalImg.src = src
+
+        modal.classList.add("show")
+        modalImg.style.transform = "scale(0.6)"
+
+        setTimeout(()=>{
+            modalImg.style.transform = "scale(1)"
+        },50)
     }
 
-    function renderGallery() {
-      const container = document.getElementById("gallery");
-      const filtered = currentFilter === "all" ? photos : photos.filter(p => p.cat === currentFilter);
-      
-      container.innerHTML = "";
-      
-      if (filtered.length === 0) {
-        container.innerHTML = `<p class="col-span-full text-center text-[#7a7d8e] py-20">Belum ada foto. Klik Tambah Foto!</p>`;
-      }
+    // 3D PARALLAX
+    card.addEventListener("mousemove",(e)=>{
+        const rect = card.getBoundingClientRect()
 
-      filtered.forEach((p) => {
-        const item = document.createElement("div");
-        item.className = "masonry-item animate-in";
-        item.innerHTML = `
-          <div class="photo-card" onclick="openLightbox(${p.id})">
-            <img src="Documentation/${p.img}" alt="${p.title}" class="w-full block" 
-                 onerror="this.src='https://placehold.co/400x300/1e2030/7a7d8e?text=File+Tidak+Ada'">
-            <div class="overlay">
-              <span class="tag-pill bg-[#f59e0b] text-[#0f1117] mb-2 w-fit">${p.cat}</span>
-              <h3 class="font-bold text-white leading-tight">${p.title}</h3>
-              <p class="text-white/60 text-[10px]">${p.date}</p>
-            </div>
-          </div>
-          <button onclick="deletePhoto(${p.id})" class="absolute top-2 right-2 bg-red-500/80 text-white p-2 rounded-full hover:bg-red-600 transition shadow-lg z-10 opacity-0 group-hover:opacity-100">
-            <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
-          </button>
-        `;
-        // Efek hover untuk tombol hapus
-        item.onmouseenter = () => item.querySelector('button').style.opacity = '1';
-        item.onmouseleave = () => item.querySelector('button').style.opacity = '0';
-        container.appendChild(item);
-      });
-      lucide.createIcons();
-    }
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
 
-    // Modal & Form
-    function openModal() { document.getElementById('inputModal').classList.add('open'); }
-    function closeModal() { document.getElementById('inputModal').classList.remove('open'); }
+        const rotateX = -(y - rect.height/2) / 10
+        const rotateY = (x - rect.width/2) / 10
 
-    document.getElementById('photoForm').onsubmit = (e) => {
-      e.preventDefault();
-      const newPhoto = {
-        id: Date.now(),
-        title: document.getElementById('in-title').value,
-        date: document.getElementById('in-date').value,
-        cat: document.getElementById('in-cat').value,
-        img: document.getElementById('in-filename').value,
-        desc: document.getElementById('in-desc').value
-      };
-      photos.unshift(newPhoto);
-      saveAndRender();
-      closeModal();
-      e.target.reset();
-    };
+        card.style.transform = `
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
+            scale(1.05)
+        `
+    })
 
-    function deletePhoto(id) {
-      if(confirm('Hapus foto ini dari tampilan?')) {
-        photos = photos.filter(p => p.id !== id);
-        saveAndRender();
-      }
-    }
+    card.addEventListener("mouseleave",()=>{
+        card.style.transform = "rotateX(0) rotateY(0) scale(1)"
+    })
+})
 
-    // Lightbox
-    function openLightbox(id) {
-      const p = photos.find(x => x.id === id);
-      document.getElementById('lb-img-tag').src = `images/${p.img}`;
-      document.getElementById('lb-title').textContent = p.title;
-      document.getElementById('lb-desc').textContent = p.desc;
-      document.getElementById('lightbox').classList.add('open');
-    }
-    function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+// ================= MODAL CONTROL =================
+function showImage(){
+    modalImg.src = imagesData[currentIndex]
+}
 
-    // Filter
-    document.getElementById("filters").onclick = (e) => {
-      const btn = e.target.closest(".filter-btn");
-      if (!btn) return;
-      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentFilter = btn.dataset.filter;
-      renderGallery();
-    };
+next.onclick = (e)=>{
+    e.stopPropagation()
+    currentIndex = (currentIndex + 1) % imagesData.length
+    showImage()
+}
 
-    // Backup & Restore
-    document.getElementById("export-btn").onclick = () => {
-      const blob = new Blob([JSON.stringify(photos, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `backup-galeri-sji.json`;
-      a.click();
-    };
+prev.onclick = (e)=>{
+    e.stopPropagation()
+    currentIndex = (currentIndex - 1 + imagesData.length) % imagesData.length
+    showImage()
+}
 
-    document.getElementById('import-file').onchange = (e) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const imported = JSON.parse(event.target.result);
-          if (Array.isArray(imported)) {
-            photos = imported;
-            saveAndRender();
-            alert('✓ Data berhasil dipulihkan!');
-          }
-        } catch (err) { alert('Format file tidak valid!'); }
-      };
-      reader.readAsText(e.target.files[0]);
-    };
+close.onclick = ()=> modal.classList.remove("show")
+modal.onclick = ()=> modal.classList.remove("show")
+modalImg.onclick = (e)=> e.stopPropagation()
 
-    renderGallery();
-    lucide.createIcons();
-  </script>
+// KEYBOARD
+document.addEventListener("keydown",(e)=>{
+    if(!modal.classList.contains("show")) return
+
+    if(e.key==="Escape") modal.classList.remove("show")
+    if(e.key==="ArrowRight") next.click()
+    if(e.key==="ArrowLeft") prev.click()
+})
+
+// ================= PARTICLE =================
+const canvas = document.getElementById("particles")
+const ctx = canvas.getContext("2d")
+
+function resize(){
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+}
+resize()
+window.addEventListener("resize", resize)
+
+let particles=[]
+for(let i=0;i<60;i++){
+    particles.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        vx:(Math.random()-0.5),
+        vy:(Math.random()-0.5),
+        size:Math.random()*2
+    })
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height)
+
+    particles.forEach(p=>{
+        p.x+=p.vx
+        p.y+=p.vy
+
+        if(p.x<0||p.x>canvas.width)p.vx*=-1
+        if(p.y<0||p.y>canvas.height)p.vy*=-1
+
+        ctx.beginPath()
+        ctx.arc(p.x,p.y,p.size,0,Math.PI*2)
+        ctx.fillStyle="#00ffff"
+        ctx.fill()
+    })
+
+    requestAnimationFrame(animate)
+}
+animate()
+
+// ================= CURSOR =================
+const cursor=document.createElement("div")
+cursor.className="cursor"
+document.body.appendChild(cursor)
+
+document.addEventListener("mousemove",(e)=>{
+    cursor.style.left=e.clientX+"px"
+    cursor.style.top=e.clientY+"px"
+})
+</script>
+
 </body>
 </html>
